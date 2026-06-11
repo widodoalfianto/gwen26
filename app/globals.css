@@ -1,59 +1,59 @@
 /* ============================================================
    Gwen 26 — a bright spring/summer day.
-   Lemon yellow accent over pastel green (Meadow) + pastel blue (Sky).
+   Design language:
+   · Titles    → Moderna (upright)
+   · UI / body → Geist
+   · Colour    → Pantone TCX spring palette (see assets/colors.png)
    ============================================================ */
 
-/* Licensed faces. Drop the .woff2 files in /public/fonts and these
-   activate automatically; until then the stack falls back to Fraunces
-   (display) and Onest (body), loaded in app/layout.tsx. */
-@font-face {
-  font-family: "Superior Title";
-  src: url("/fonts/SuperiorTitle-Italic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 400 700;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Mundial";
-  src: url("/fonts/Mundial-Regular.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Mundial";
-  src: url("/fonts/Mundial-Bold.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
+/* Geist (titles + UI/body) is loaded from Google Fonts in app/layout.tsx. */
 
 :root {
-  --bg-top: #ecf7fd;
-  --bg-bottom: #fcfdf2;
+  /* Cream "garden-party" surfaces (paper, not sterile white) */
+  --surface: #fafaf3;
+  --surface-2: #f5f4ed;
+  --surface-3: #efeee7;
+  --bg-top: #fafaf3;
+  --bg-bottom: #fdfcf5;
   --card: #ffffff;
-  --ink: #2c3a2e;
-  --muted: #6f7d6c;
-  --dim: #9aa897;
-  --line: #e7eddc;
+  --ink: #1b1c18;
+  --muted: #494738;
+  --dim: #7a7767;
+  --line: #cbc7b3;
 
-  --lemon: #ffe14d;
-  --lemon-deep: #c79400;
-  --lemon-soft: #fff7cc;
+  /* Lemon Verbena 12-0742 — accent */
+  --lemon: #f2e989;
+  --lemon-deep: #ad9f00;
+  --lemon-soft: #fbf9e7;
 
-  --green: #8ad196;
-  --green-deep: #3f8a55;
-  --green-soft: #e9f6ea;
+  /* Summer Green 14-0156 — Team Meadow */
+  --green: #93d188;
+  --green-deep: #358727;
+  --green-soft: #edf7eb;
 
-  --blue: #93cbeb;
-  --blue-deep: #2f7fab;
-  --blue-soft: #e6f3fc;
+  /* Blue Atoll 16-4535 — Team Sky */
+  --blue: #4fafce;
+  --blue-deep: #1a7694;
+  --blue-soft: #eaf5f8;
+
+  /* Sap Green 13-0331 & Ethereal Blue 15-4323 — secondary accents */
+  --sap: #b5ca88;
+  --sap-deep: #66802d;
+  --sap-soft: #f3f6ec;
+
+  /* warm honey accent for inviting CTAs */
+  --honey: #f3c969;
+  --ether: #6ea4ca;
+  --ether-deep: #245f89;
 
   --radius: 16px;
-  --shadow: 0 1px 2px rgba(44, 58, 46, 0.05), 0 8px 24px rgba(44, 58, 46, 0.06);
+  --radius-tile: 10px;
+  --shadow: 0 4px 20px rgba(27, 28, 24, 0.06);
 
-  --display: "Superior Title", "Fraunces", Georgia, "Times New Roman", serif;
-  --body: "Mundial", "Onest", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* Handwritten titles & cards; Geist UI/body; mono for caps labels/code */
+  --display: "Playwrite AU VIC Guides", "Segoe Script", cursive;
+  --body: "Nunito", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 * {
@@ -68,8 +68,9 @@ body {
 body {
   font-family: var(--body);
   color: var(--ink);
-  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 42%);
-  background-attachment: fixed;
+  background-color: var(--surface);
+  /* subtle paper grain for a tactile, hand-made feel */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -82,16 +83,17 @@ body {
 
 .display {
   font-family: var(--display);
-  font-style: italic;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.02;
+  font-style: normal;
+  font-weight: 400; /* Playwrite is a single-weight handwriting face */
+  letter-spacing: 0;
+  line-height: 1.35; /* handwriting needs breathing room */
 }
 .eyebrow {
+  font-family: var(--mono);
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--dim);
 }
 .muted {
@@ -111,17 +113,17 @@ body {
 }
 .banner {
   background: var(--lemon-soft);
-  border: 1px solid #f3e08a;
+  border: 1px solid #ece3a0;
   border-radius: 14px;
   padding: 12px 14px;
-  color: #6a5800;
+  color: #6e6300;
   font-size: 14px;
   margin-top: 14px;
 }
 .mc {
   margin-top: 22px;
-  background: #fbfdf4;
-  border: 1px dashed var(--line);
+  background: var(--sap-soft, #f4f7ec);
+  border: 1px dashed var(--sap);
   border-radius: var(--radius);
   padding: 16px;
 }
@@ -129,10 +131,10 @@ body {
 /* inputs */
 .input {
   width: 100%;
-  background: #fbfdf6;
+  background: #fdfbf2;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 13px 14px;
+  border-radius: 14px;
+  padding: 14px 14px;
   color: var(--ink);
   font-size: 16px;
   font-family: var(--body);
@@ -158,11 +160,11 @@ body {
 .btn {
   appearance: none;
   border: 1px solid transparent;
-  border-radius: 12px;
-  padding: 14px 16px;
+  border-radius: 16px;
+  padding: 15px 16px;
   font-family: var(--body);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: transform 0.08s ease, filter 0.12s ease, opacity 0.12s ease;
   width: 100%;
@@ -179,8 +181,8 @@ body {
 }
 .btn--primary {
   background: var(--lemon);
-  color: #4a3a00;
-  box-shadow: 0 6px 16px rgba(255, 210, 63, 0.4);
+  color: #5a5200;
+  box-shadow: 0 6px 16px rgba(242, 233, 137, 0.55);
 }
 .btn--ghost {
   background: transparent;
@@ -267,7 +269,7 @@ body {
 }
 .teamhead {
   font-family: var(--display);
-  font-style: italic;
+  font-style: normal;
   font-weight: 600;
   color: var(--accent-deep, var(--ink));
   margin-bottom: 10px;
@@ -291,7 +293,7 @@ body {
 }
 .cell {
   aspect-ratio: 1 / 1;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--line);
   background: var(--card);
   display: grid;
@@ -304,14 +306,205 @@ body {
   position: relative;
   width: 100%;
   overflow: hidden;
+  /* paper card resting on the table */
+  box-shadow: 0 3px 12px rgba(27, 28, 24, 0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+/* gentle hand-cut rotation jitter on the play/free tiles */
+.cell--mark:nth-child(4n + 1),
+.cell--free:nth-child(4n + 1) {
+  transform: rotate(-1.4deg);
+}
+.cell--mark:nth-child(4n + 2),
+.cell--free:nth-child(4n + 2) {
+  transform: rotate(1deg);
+}
+.cell--mark:nth-child(4n + 3),
+.cell--free:nth-child(4n + 3) {
+  transform: rotate(-0.6deg);
+}
+.cell--mark:nth-child(4n),
+.cell--free:nth-child(4n) {
+  transform: rotate(1.6deg);
 }
 .cell--free {
   background: var(--lemon-soft);
-  border-color: #f0d97a;
+  border-color: #e6da86;
 }
 .cell--free .emoji {
   font-size: 26px;
   line-height: 1;
+}
+.cell--free .emoji-img {
+  width: 84%;
+  height: 84%;
+  object-fit: contain;
+}
+/* board words stay in Geist for legibility at small sizes */
+.cell .word {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.12;
+}
+.cell--editable.cell--dupe {
+  border-color: #ba1a1a;
+  box-shadow: 0 0 0 2px rgba(186, 26, 26, 0.18);
+}
+/* the describer's one-at-a-time reveal */
+.reveal-card {
+  margin-top: 10px;
+  background: var(--card);
+  border: 1px solid var(--accent, var(--line));
+  border-radius: 18px;
+  padding: 30px 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.reveal-word {
+  font-size: 46px;
+  line-height: 1.15;
+  color: var(--accent-deep, var(--ink));
+  word-break: break-word;
+}
+
+/* circular SVG timer */
+.ctimer {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  margin: 4px auto 8px;
+  border-radius: 50%;
+}
+.ctimer svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.ctimer-track {
+  fill: none;
+  stroke: var(--surface-3);
+  stroke-width: 7;
+}
+.ctimer-prog {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s ease;
+}
+.ctimer-num {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 34px;
+  font-variant-numeric: tabular-nums;
+}
+.ctimer--danger {
+  animation: ctimer-pulse 1s ease-in-out infinite;
+}
+@keyframes ctimer-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(186, 26, 26, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 13px rgba(186, 26, 26, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(186, 26, 26, 0);
+  }
+}
+
+/* end-game fun scorecards */
+.scorecard {
+  position: relative;
+  text-align: center;
+  background: var(--soft, var(--surface-2));
+  border: 2px solid var(--accent, var(--line));
+  border-radius: 18px;
+  padding: 18px 12px 14px;
+}
+.scorecard--win {
+  box-shadow: 0 8px 24px rgba(217, 171, 0, 0.22);
+}
+.scorecard-crown {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-8deg);
+  font-size: 26px;
+}
+.scorecard-name {
+  font-size: 26px;
+  color: var(--accent-deep, var(--ink));
+  line-height: 1.1;
+}
+.scorecard-num {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 46px;
+  line-height: 1;
+  color: var(--accent-deep, var(--ink));
+  margin: 2px 0;
+}
+
+/* word right/wrong pips in the turn review */
+.wordpip {
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+}
+.wordpip--yes {
+  background: #e9f7ea;
+  color: #2f7a3a;
+  border-color: #b7e3bd;
+}
+.wordpip--no {
+  background: var(--surface-3);
+  color: var(--dim);
+  text-decoration: line-through;
+}
+
+/* QR join code in the lobby */
+.qrbox {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px 14px 10px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+.qrbox svg {
+  border-radius: 8px;
+}
+
+/* big instruction card (directing players) */
+.instruct {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  background: var(--lemon-soft);
+  border: 1px solid #ece3a0;
+  border-radius: 16px;
+  padding: 20px 18px;
+  margin-top: 16px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #5f5600;
+  box-shadow: var(--shadow);
+}
+.instruct-emoji {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 .cell--free .freelabel {
   font-size: 9px;
@@ -326,8 +519,8 @@ body {
   background: transparent;
   text-align: center;
   font-family: var(--body);
-  font-size: 12px;
   font-weight: 600;
+  font-size: 13px;
   color: var(--ink);
   outline: none;
 }
@@ -344,39 +537,61 @@ body {
 .cell--on {
   background: var(--soft, var(--lemon-soft));
   border-color: var(--accent, var(--lemon-deep));
+  /* pressed down, as if stamped */
+  transform: translateY(2px) rotate(0deg);
+  box-shadow: inset 0 2px 6px rgba(27, 28, 24, 0.1);
 }
 .cell--on .word {
-  opacity: 0.5;
+  opacity: 0.45;
 }
-.stamp {
+
+/* stamps layer — sits above every card so markers are never clipped/covered */
+.boardwrap {
+  position: relative;
+}
+.board--stamps {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--accent, var(--lemon-deep));
-  font-size: 30px;
-  font-weight: 800;
   pointer-events: none;
-  animation: stamp 0.25s cubic-bezier(0.2, 1.4, 0.4, 1);
+  z-index: 10;
+}
+.stampslot {
+  position: relative;
+  aspect-ratio: 1 / 1;
+}
+/* hand-drawn ellipse, randomly angled + coloured (set inline), via CSS mask */
+.stamp {
+  position: absolute;
+  inset: -24%;
+  background: var(--ink);
+  -webkit-mask: url("/images/mark-ellipse.png") center / contain no-repeat;
+  mask: url("/images/mark-ellipse.png") center / contain no-repeat;
+  transform-origin: 50% 50%;
+  transform: rotate(var(--ang, 0deg));
+  animation: stamp 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 }
 @keyframes stamp {
   0% {
-    transform: scale(2) rotate(-16deg);
+    transform: scale(1.7) rotate(calc(var(--ang, 0deg) - 12deg));
     opacity: 0;
   }
+  60% {
+    transform: scale(0.95) rotate(calc(var(--ang, 0deg) + 5deg));
+    opacity: 1;
+  }
   100% {
-    transform: scale(1) rotate(-7deg);
+    transform: scale(1) rotate(var(--ang, 0deg));
     opacity: 1;
   }
 }
 
 /* timer */
 .timer {
-  font-family: var(--display);
-  font-style: italic;
+  font-family: var(--mono);
   font-weight: 700;
-  font-size: 66px;
+  font-size: 60px;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   margin: 6px 0;
 }
@@ -418,7 +633,7 @@ body {
   border: 1px solid var(--accent, var(--lemon-deep));
   color: var(--accent-deep, var(--lemon-deep));
   font-family: var(--display);
-  font-style: italic;
+  font-style: normal;
   font-weight: 700;
   font-size: 24px;
   letter-spacing: 0.04em;
@@ -443,6 +658,136 @@ body {
 .codetag:focus-visible {
   outline: 2px solid var(--lemon-deep);
   outline-offset: 2px;
+}
+
+/* ---------------- home hero ---------------- */
+.home {
+  padding-top: 8px;
+}
+.hero {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  border-radius: 24px;
+  padding: 40px 24px 34px;
+  margin: 10px 0 26px;
+  background: linear-gradient(160deg, #ffffff 0%, var(--lemon-soft) 100%);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: var(--lemon);
+  bottom: -92px;
+  right: -48px;
+  opacity: 0.55;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: var(--sap);
+  bottom: -80px;
+  left: -44px;
+  opacity: 0.35;
+}
+.hero-title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 58px;
+  line-height: 1.1;
+  color: #d9ab00;
+  transform: rotate(-2deg); /* hand-cut jitter */
+  text-shadow: 0 2px 0 rgba(217, 171, 0, 0.12);
+}
+.hero-accent {
+  color: #d9ab00;
+}
+.hero-tag {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  margin-top: 16px;
+  background: var(--surface-3);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* colored top accent strip on cards */
+.card--top {
+  position: relative;
+  overflow: hidden;
+}
+.card--top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--lemon), var(--green), var(--blue), var(--ether));
+}
+
+/* how-a-round-works numbered badges */
+.howto {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 12px 0 0;
+}
+.howto li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 40px;
+  margin-bottom: 13px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.howto li:last-child {
+  margin-bottom: 0;
+}
+.howto li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--ink);
+}
+.howto li:nth-child(1)::before {
+  background: var(--green);
+}
+.howto li:nth-child(2)::before {
+  background: var(--blue);
+}
+.howto li:nth-child(3)::before {
+  background: var(--lemon);
+}
+.howto li:nth-child(4)::before {
+  background: var(--ether);
+}
+.howto li:nth-child(5)::before {
+  background: var(--sap);
 }
 
 @media (prefers-reduced-motion: reduce) {

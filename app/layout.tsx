@@ -16,12 +16,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        {/* Free fallbacks. The licensed Superior Title / Mundial faces (see
-            public/fonts) take precedence in the font stack when present. */}
+        {/* Playwrite AU VIC Guides → handwritten titles & cards.
+            Nunito → UI/body. JetBrains Mono → caps labels, code, scores. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600;1,9..144,700&family=Onest:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Playwrite+AU+VIC+Guides&display=swap"
           rel="stylesheet"
         />
       </head>

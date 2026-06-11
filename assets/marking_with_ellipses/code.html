@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gwen 26 - Listening Bingo</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config injected from design system -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#fafaf3",
+                    "on-tertiary-container": "#00708a",
+                    "secondary-container": "#b3f3a6",
+                    "on-secondary-fixed-variant": "#185218",
+                    "inverse-primary": "#d2c96d",
+                    "on-secondary-fixed": "#002202",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#c0edff",
+                    "on-secondary-container": "#387133",
+                    "surface-container-high": "#e9e8e2",
+                    "inverse-on-surface": "#f2f1ea",
+                    "on-surface-variant": "#494738",
+                    "on-surface": "#1b1c18",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#e3e3dc",
+                    "tertiary": "#00677f",
+                    "inverse-surface": "#30312c",
+                    "surface-dim": "#dbdad4",
+                    "surface-container-highest": "#e3e3dc",
+                    "on-primary-fixed": "#1f1c00",
+                    "on-primary-fixed-variant": "#4d4800",
+                    "surface-container": "#efeee7",
+                    "on-tertiary-fixed": "#001f28",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "outline-variant": "#cbc7b3",
+                    "surface-container-low": "#f5f4ed",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#d2c96d",
+                    "outline": "#7a7767",
+                    "on-tertiary-fixed-variant": "#004e60",
+                    "surface-bright": "#fafaf3",
+                    "tertiary-fixed": "#b7eaff",
+                    "primary-container": "#f2e989",
+                    "secondary": "#326a2e",
+                    "surface-tint": "#66600c",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#6f6815",
+                    "primary-fixed": "#eee686",
+                    "secondary-fixed-dim": "#98d68d",
+                    "primary": "#66600c",
+                    "tertiary-fixed-dim": "#76d3f3",
+                    "on-background": "#1b1c18",
+                    "background": "#fafaf3",
+                    "secondary-fixed": "#b3f3a6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "lg": "32px",
+                    "grid-gutter": "12px",
+                    "base": "4px",
+                    "xl": "48px",
+                    "sm": "16px",
+                    "md": "24px",
+                    "safe-margin": "20px"
+            },
+            "fontFamily": {
+                    "display-hero": [
+                            "Bricolage Grotesque"
+                    ],
+                    "headline-lg": [
+                            "Bricolage Grotesque"
+                    ],
+                    "body-md": [
+                            "system-ui", "sans-serif" // Fallback since Geist might not load without specific link
+                    ],
+                    "label-caps": [
+                            "JetBrains Mono"
+                    ],
+                    "headline-lg-mobile": [
+                            "Bricolage Grotesque"
+                    ],
+                    "handwritten-accent": [
+                            "Bricolage Grotesque"
+                    ]
+            },
+            "fontSize": {
+                    "display-hero": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "handwritten-accent": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "500"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Custom Utilities */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Noise Texture for tactile feel */
+        .bg-noise {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+        }
+
+        /* Animations */
+        @keyframes stamp-pop {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .animate-stamp {
+            animation: stamp-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes pulse-danger {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(186, 26, 26, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(186, 26, 26, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(186, 26, 26, 0); }
+        }
+        .timer-danger {
+            animation: pulse-danger 1s infinite;
+            color: theme('colors.error');
+            border-color: theme('colors.error');
+        }
+
+        /* SVG Circular Progress */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1s linear, stroke 0.3s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Organic rotations for tiles */
+        .rotate-r-1 { transform: rotate(1deg); }
+        .rotate-l-1 { transform: rotate(-1deg); }
+        .rotate-r-2 { transform: rotate(2deg); }
+        .rotate-l-2 { transform: rotate(-2deg); }
+        
+        .tile-pressed {
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(2px) !important;
+        }
+    </style>
+</head>
+<body class="bg-surface bg-noise text-on-surface min-h-screen flex flex-col font-body-md text-body-md pb-[80px] md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface text-primary flex justify-between items-center w-full px-safe-margin py-xs max-w-md mx-auto docked full-width top-0 z-40 sticky">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary hover:opacity-80 transition-opacity cursor-pointer">grid_view</span>
+<h1 class="font-display-hero text-handwritten-accent italic">Gwen 26</h1>
+</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant hover:opacity-80 transition-opacity cursor-pointer">
+            Lobby: J7K2L
+        </div>
+</header>
+<!-- Team Scores Bar (Persistent) -->
+<div class="w-full max-w-md mx-auto px-safe-margin py-2 flex justify-between items-center border-b border-outline-variant/30 bg-surface-container/50 backdrop-blur-sm sticky top-[60px] z-30">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-secondary font-bold">Team Meadow</span>
+<div class="flex gap-1 mt-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+</div>
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface opacity-20 mx-2">|</div>
+<div class="flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-tertiary font-bold">Team Sky</span>
+<div class="flex gap-1 mt-1">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+</div>
+</div>
+</div>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-md mx-auto flex flex-col items-center pt-md px-safe-margin">
+<!-- Timer & Header Section -->
+<div class="flex flex-col items-center mb-md w-full relative">
+<!-- Circular Timer -->
+<div class="relative w-24 h-24 mb-sm rounded-full bg-surface-container-lowest shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-2 border-surface-container flex items-center justify-center transition-all duration-300" id="timer-container">
+<svg class="absolute inset-0 w-full h-full" viewbox="0 0 100 100">
+<circle class="text-surface-variant stroke-current" cx="50" cy="50" fill="transparent" r="44" stroke-width="6"></circle>
+<circle class="stroke-current progress-ring__circle text-error" cx="50" cy="50" fill="transparent" id="timer-ring" r="44" stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" stroke-width="6" style="stroke-dashoffset: 276.46;"></circle>
+</svg>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface z-10 font-bold tabular-nums text-error" id="timer-text">0</span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface text-center leading-tight">Mark what you hear!</h2>
+<p class="font-body-md text-body-md text-on-surface-variant text-center mt-1">First team to get 4 in a row wins.</p>
+</div>
+<!-- 4x4 Bingo Board Container -->
+<div class="grid grid-cols-4 gap-grid-gutter w-full aspect-square relative z-10 mb-xl">
+<!-- Tile 1 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-l-1 hover:bg-surface-container-low tile-pressed" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Loud Laughter</span>
+<div class="stamp-container absolute inset-0 flex items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"><img alt="marked" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4pGOwAkazCX5LjnDPhXemSJSkdpWrWa5KI4S7FASAAL_s1RuFuIIejHi2MzZCzd81s487LQVdXu3_F3h6Z8sQCdD-AkUnd11g4KavBROg9Yk7gCuo5SIW93hx_PCACvb0uN_xSvI615Kwf2fY96-usF-m3KQNa60FVpPzSFNqcbJxjeKtxEHRkgo1gvSk1iRuLSxwkqOY_Q6AE8wZZFJiM1vv4NUWG_L_wTkEkhLSttiAYvEBW4s120eRIIm3cPrfMJOnxy-IUxYq" style="filter: brightness(0) saturate(100%) invert(91%) sepia(18%) saturate(1014%) hue-rotate(3deg) brightness(103%) contrast(89%);"/></div>
+</button>
+<!-- Tile 2 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-r-2 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Dog Barks</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 3 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-l-2 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">"Cheers!"</span>
+<div class="stamp-container absolute inset-0 items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1 text-on-surface hidden"></div>
+</button>
+<!-- Tile 4 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-r-1 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Glass Clinking</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 5 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-r-1 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Someone mentions "Gwen"</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 6 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-l-1 hover:bg-surface-container-low tile-pressed" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Sighing</span>
+<div class="stamp-container absolute inset-0 flex items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"><img alt="marked" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4pGOwAkazCX5LjnDPhXemSJSkdpWrWa5KI4S7FASAAL_s1RuFuIIejHi2MzZCzd81s487LQVdXu3_F3h6Z8sQCdD-AkUnd11g4KavBROg9Yk7gCuo5SIW93hx_PCACvb0uN_xSvI615Kwf2fY96-usF-m3KQNa60FVpPzSFNqcbJxjeKtxEHRkgo1gvSk1iRuLSxwkqOY_Q6AE8wZZFJiM1vv4NUWG_L_wTkEkhLSttiAYvEBW4s120eRIIm3cPrfMJOnxy-IUxYq" style="filter: brightness(0) saturate(100%) invert(79%) sepia(11%) saturate(1014%) hue-rotate(148deg) brightness(91%) contrast(85%);"/></div>
+</button>
+<!-- Tile 7 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-r-2 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Phone Ringing</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 8 (Centerish) -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-l-2 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">"Happy Birthday!"</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 9 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-l-1 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">A song skips</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 10 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-r-1 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Spilled Drink</span>
+<div class="stamp-container absolute inset-0 items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1 text-error hidden"></div>
+</button>
+<!-- Tile 11 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-l-2 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Sneezing</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 12 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-r-2 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">"I love this song"</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 13 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-r-2 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Camera Flash</span>
+<div class="stamp-container absolute inset-0 items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1 text-error hidden"></div>
+</button>
+<!-- Tile 14 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-l-1 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Someone asking for WiFi</span>
+<div class="stamp-container absolute inset-0 items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1 text-on-surface hidden"></div>
+</button>
+<!-- Tile 15 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-l-2 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">Deep Sigh</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+<!-- Tile 16 -->
+<button class="bingo-tile relative bg-surface-container-lowest rounded aspect-square shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/20 flex items-center justify-center p-1 sm:p-2 text-center transition-all rotate-r-1 hover:bg-surface-container-low" onclick="toggleStamp(this)">
+<span class="sm:text-sm font-medium text-on-surface leading-tight z-10 pointer-events-none select-none font-handwritten-accent text-sm">"Wait, what?"</span>
+<div class="stamp-container absolute inset-0 hidden items-center justify-center mix-blend-multiply opacity-80 pointer-events-none z-20 p-1"></div>
+</button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface-container-low shadow-[0_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-xs pb-safe pt-xs rounded-t-xl h-[80px]">
+<!-- Active: Play -->
+<div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-1 -translate-y-1 transition-transform duration-200 cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">casino</span>
+<span class="font-label-caps text-label-caps mt-1">Play</span>
+</div>
+<!-- Inactive: Board -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant/50 transition-colors cursor-pointer rounded-xl">
+<span class="material-symbols-outlined">grid_on</span>
+<span class="font-label-caps text-label-caps mt-1">Board</span>
+</div>
+<!-- Inactive: Lobby -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant/50 transition-colors cursor-pointer rounded-xl">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-caps text-label-caps mt-1">Lobby</span>
+</div>
+</nav>
+<script>
+        // --- Timer Logic ---
+        const timerText = document.getElementById('timer-text');
+        const timerRing = document.getElementById('timer-ring');
+        const timerContainer = document.getElementById('timer-container');
+        let timeLeft = 60;
+        const totalTime = 60;
+        const circumference = 2 * Math.PI * 44; // r=44
+
+        function updateTimer() {
+            timeLeft--;
+            timerText.textContent = timeLeft;
+
+            const offset = circumference - (timeLeft / totalTime) * circumference;
+            timerRing.style.strokeDashoffset = offset;
+
+            if (timeLeft <= 10) {
+                timerContainer.classList.add('timer-danger');
+                timerRing.classList.remove('text-secondary');
+                timerRing.classList.add('text-error');
+                timerText.classList.add('text-error');
+            }
+
+            if (timeLeft > 0) {
+                setTimeout(updateTimer, 1000);
+            } else {
+                timerContainer.classList.remove('timer-danger');
+                // Handle timer end (e.g., reveal next sound)
+            }
+        }
+        
+        // Start timer
+        setTimeout(updateTimer, 1000);
+
+
+        // --- Bingo Stamp Logic ---
+        // Hand-drawn SVG paths for stamps
+        const stampPaths = [
+            // X path 1
+            `<svg viewBox="0 0 100 100" class="w-full h-full p-2" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 20 Q 50 50 80 80 M 80 20 Q 50 50 20 80" stroke-dasharray="1000" stroke-dashoffset="0"/>
+                <path d="M18 22 Q 48 52 78 82 M 78 22 Q 48 52 18 82" stroke-width="2" opacity="0.5"/>
+            </svg>`,
+            // X path 2 (slightly different)
+            `<svg viewBox="0 0 100 100" class="w-full h-full p-2" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 25 L 85 75 M 85 25 L 15 75" />
+                <path d="M17 23 L 83 73 M 83 23 L 17 73" stroke-width="3" opacity="0.6"/>
+            </svg>`
+        ];
+
+        function toggleStamp(btn) {
+            const container = btn.querySelector('.stamp-container');
+            const isStamped = !container.classList.contains('hidden');
+
+            if (isStamped) {
+                // Unstamp
+                container.classList.add('hidden');
+                container.innerHTML = '';
+                btn.classList.remove('tile-pressed');
+            } else {
+                // Stamp
+                // Randomly pick red (error) or black (on-surface)
+                const isRed = Math.random() > 0.5;
+                const colorClass = isRed ? 'text-error' : 'text-on-surface';
+                
+                // Randomly pick a path
+                const pathIndex = Math.floor(Math.random() * stampPaths.length);
+                
+                container.innerHTML = stampPaths[pathIndex];
+                container.classList.remove('hidden');
+                container.classList.add(colorClass, 'animate-stamp');
+                btn.classList.add('tile-pressed');
+
+                // Vibrate if supported
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+
+                // Remove animation class after it completes so it can play again if toggled
+                setTimeout(() => {
+                    container.classList.remove('animate-stamp');
+                }, 300);
+            }
+        }
+    </script>
+</body></html>

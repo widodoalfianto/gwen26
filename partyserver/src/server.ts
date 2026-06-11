@@ -1,5 +1,5 @@
 import { routePartykitRequest, Server, type Connection } from "partyserver";
-import { reduce, initialState, type GameState, type ClientMsg } from "../../lib/game";
+import { reduce, onTimeout, initialState, type GameState, type ClientMsg } from "../../lib/game";
 
 export interface Env {
   Lobby: DurableObjectNamespace;
@@ -22,12 +22,54 @@ export class Lobby extends Server<Env> {
     await this.ctx.storage.put("state", this.state);
   }
 
-  private payload() {
-    return JSON.stringify({ type: "state", state: this.state });
+  // Per-connection view. Scores stay hidden until the final reveal. The whole
+  // GUESSING team is blind to the words: nobody on it sees them during fill/
+  // ready, and during the round its describers only get the words revealed so
+  // far (one at a time). The guesser never sees any. The listening team (who
+  // predicts) sees them all.
+  private view(playerId?: string): GameState {
+    const s = this.state;
+    const me = playerId ? s.players.find((p) => p.id === playerId) : undefined;
+    let secret = s.secret;
+    if (me && s.turnTeam && me.team === s.turnTeam) {
+      if (me.id === s.guesserId) {
+        secret = [];
+      } else if (s.phase === "guess") {
+        secret = s.secret.map((w, i) => (i <= s.revealIdx ? w : "")); // revealed so far
+      } else {
+        secret = []; // fill / ready — blind
+      }
+    }
+    const hideScores = s.phase !== "done";
+    if (!hideScores && secret === s.secret) return s;
+    return {
+      ...s,
+      scores: hideScores ? { A: 0, B: 0 } : s.scores,
+      history: hideScores ? [] : s.history,
+      secret,
+    };
+  }
+
+  private sendTo(connection: Connection<ConnState>) {
+    const pid = (connection.state as ConnState | null)?.playerId;
+    connection.send(JSON.stringify({ type: "state", state: this.view(pid) }));
+  }
+
+  private broadcastState() {
+    for (const c of this.getConnections<ConnState>()) this.sendTo(c);
+  }
+
+  private async applyAlarm(alarm: number | null | undefined) {
+    if (alarm === null) {
+      const existing = await this.ctx.storage.getAlarm();
+      if (existing !== null) await this.ctx.storage.deleteAlarm();
+    } else if (typeof alarm === "number") {
+      await this.ctx.storage.setAlarm(alarm);
+    }
   }
 
   onConnect(connection: Connection<ConnState>) {
-    connection.send(this.payload());
+    this.sendTo(connection);
   }
 
   async onMessage(connection: Connection<ConnState>, raw: string) {
@@ -45,29 +87,19 @@ export class Lobby extends Server<Env> {
     const { state, alarm } = reduce(this.state, msg, sid);
     this.state = state;
 
-    if (alarm === null) {
-      const existing = await this.ctx.storage.getAlarm();
-      if (existing !== null) await this.ctx.storage.deleteAlarm();
-    } else if (typeof alarm === "number") {
-      await this.ctx.storage.setAlarm(alarm);
-    }
-
+    await this.applyAlarm(alarm);
     await this.persist();
-    this.broadcast(this.payload());
+    this.broadcastState();
   }
 
   // Server-authoritative turn timer: fires when the 60s window closes.
   async onAlarm() {
-    const s = this.state;
-    if (s.turnActive && s.turn && s.turnEndsAt && Date.now() >= s.turnEndsAt) {
-      this.state = {
-        ...s,
-        turnActive: false,
-        turnsDone: { ...s.turnsDone, [s.turn]: true },
-      };
-      await this.persist();
-      this.broadcast(this.payload());
-    }
+    const { state, alarm } = onTimeout(this.state);
+    if (state === this.state) return; // nothing to do
+    this.state = state;
+    await this.applyAlarm(alarm);
+    await this.persist();
+    this.broadcastState();
   }
 
   // If the host's last connection drops, hand the crown to someone still here.
@@ -76,7 +108,7 @@ export class Lobby extends Server<Env> {
     if (!pid || this.state.hostId !== pid) return;
 
     const present = new Set<string>();
-    for (const c of this.getConnections()) {
+    for (const c of this.getConnections<ConnState>()) {
       if (c.id === connection.id) continue;
       const cs = c.state as ConnState | null;
       if (cs?.playerId) present.add(cs.playerId);
@@ -87,7 +119,7 @@ export class Lobby extends Server<Env> {
     if (heir) {
       this.state = { ...this.state, hostId: heir.id };
       await this.persist();
-      this.broadcast(this.payload());
+      this.broadcastState();
     }
   }
 }

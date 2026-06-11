@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gwen 26 - Lobby</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Geist:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#fafaf3",
+                      "on-tertiary-container": "#00708a",
+                      "secondary-container": "#b3f3a6",
+                      "on-secondary-fixed-variant": "#185218",
+                      "inverse-primary": "#d2c96d",
+                      "on-secondary-fixed": "#002202",
+                      "on-error-container": "#93000a",
+                      "tertiary-container": "#c0edff",
+                      "on-secondary-container": "#387133",
+                      "surface-container-high": "#e9e8e2",
+                      "inverse-on-surface": "#f2f1ea",
+                      "on-surface-variant": "#494738",
+                      "on-surface": "#1b1c18",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#e3e3dc",
+                      "tertiary": "#00677f",
+                      "inverse-surface": "#30312c",
+                      "surface-dim": "#dbdad4",
+                      "surface-container-highest": "#e3e3dc",
+                      "on-primary-fixed": "#1f1c00",
+                      "on-primary-fixed-variant": "#4d4800",
+                      "surface-container": "#efeee7",
+                      "on-tertiary-fixed": "#001f28",
+                      "on-error": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "outline-variant": "#cbc7b3",
+                      "surface-container-low": "#f5f4ed",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#d2c96d",
+                      "outline": "#7a7767",
+                      "on-tertiary-fixed-variant": "#004e60",
+                      "surface-bright": "#fafaf3",
+                      "tertiary-fixed": "#b7eaff",
+                      "primary-container": "#f2e989",
+                      "secondary": "#326a2e",
+                      "surface-tint": "#66600c",
+                      "error": "#ba1a1a",
+                      "on-primary-container": "#6f6815",
+                      "primary-fixed": "#eee686",
+                      "secondary-fixed-dim": "#98d68d",
+                      "primary": "#66600c",
+                      "tertiary-fixed-dim": "#76d3f3",
+                      "on-background": "#1b1c18",
+                      "background": "#fafaf3",
+                      "secondary-fixed": "#b3f3a6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "8px",
+                      "lg": "32px",
+                      "grid-gutter": "12px",
+                      "base": "4px",
+                      "xl": "48px",
+                      "sm": "16px",
+                      "md": "24px",
+                      "safe-margin": "20px"
+              },
+              "fontFamily": {
+                      "display-hero": [
+                              "Bricolage Grotesque"
+                      ],
+                      "headline-lg": [
+                              "Bricolage Grotesque"
+                      ],
+                      "body-md": [
+                              "Geist"
+                      ],
+                      "label-caps": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg-mobile": [
+                              "Bricolage Grotesque"
+                      ],
+                      "handwritten-accent": [
+                              "Bricolage Grotesque"
+                      ]
+              },
+              "fontSize": {
+                      "display-hero": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "handwritten-accent": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen relative flex justify-center pb-24">
+<!-- Mobile Container Wrapper -->
+<div class="w-full max-w-md mx-auto relative min-h-screen bg-surface shadow-2xl flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 inset-x-0 mx-auto max-w-md z-40 bg-surface flex justify-between items-center w-full px-safe-margin py-xs">
+<button class="text-primary hover:opacity-80 transition-opacity flex items-center justify-center p-2 rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<h1 class="font-handwritten-accent text-handwritten-accent text-primary italic">Gwen 26</h1>
+<div class="font-label-caps text-label-caps text-primary px-3 py-1.5 bg-primary-container/30 rounded-lg">
+                Lobby: J7K2L
+            </div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 pt-24 px-safe-margin pb-32 flex flex-col gap-lg">
+<!-- Lobby Code Hero -->
+<div class="text-center flex flex-col items-center gap-xs mt-sm">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Your Lobby Code</span>
+<div class="font-display-hero text-display-hero text-on-surface tracking-widest bg-surface-container-high px-6 py-2 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-variant inline-block">
+                    J7K2L
+                </div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-[250px] mx-auto text-sm">
+                    Waiting for everyone to join before dealing the cards.
+                </p>
+</div>
+<!-- Teams Layout -->
+<div class="grid grid-cols-2 gap-grid-gutter mt-4 flex-1">
+<!-- Team Meadow (Green) -->
+<div class="flex flex-col gap-sm">
+<div class="flex items-center gap-2 justify-center pb-2 border-b-2 border-secondary-container/50">
+<span class="material-symbols-outlined text-secondary fill-icon">emoji_nature</span>
+<h2 class="font-headline-lg-mobile text-handwritten-accent text-secondary">Meadow</h2>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Player Chip (Host) -->
+<div class="bg-surface-container-highest text-on-surface rounded-full px-4 py-2.5 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-l-4 border-secondary transition-transform hover:-translate-y-0.5">
+<span class="font-body-md text-body-md font-medium">Gwen (You)</span>
+<span class="material-symbols-outlined text-primary fill-icon text-lg">workspace_premium</span>
+</div>
+<!-- Player Chip -->
+<div class="bg-surface-container-lowest text-on-surface rounded-full px-4 py-2.5 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-l-4 border-secondary transition-transform hover:-translate-y-0.5">
+<span class="font-body-md text-body-md">Sarah</span>
+</div>
+<!-- Player Chip -->
+<div class="bg-surface-container-lowest text-on-surface rounded-full px-4 py-2.5 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-l-4 border-secondary transition-transform hover:-translate-y-0.5">
+<span class="font-body-md text-body-md">Alex</span>
+</div>
+</div>
+</div>
+<!-- Team Sky (Blue) -->
+<div class="flex flex-col gap-sm">
+<div class="flex items-center gap-2 justify-center pb-2 border-b-2 border-tertiary-container/50">
+<span class="material-symbols-outlined text-tertiary fill-icon">cloud</span>
+<h2 class="font-headline-lg-mobile text-handwritten-accent text-tertiary">Sky</h2>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Player Chip -->
+<div class="bg-surface-container-lowest text-on-surface rounded-full px-4 py-2.5 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-l-4 border-tertiary transition-transform hover:-translate-y-0.5">
+<span class="font-body-md text-body-md">Jamie</span>
+</div>
+<!-- Player Chip -->
+<div class="bg-surface-container-lowest text-on-surface rounded-full px-4 py-2.5 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-l-4 border-tertiary transition-transform hover:-translate-y-0.5">
+<span class="font-body-md text-body-md">Taylor</span>
+</div>
+<!-- Empty Slot -->
+<div class="bg-surface-variant/30 text-on-surface-variant/50 border border-dashed border-outline-variant rounded-full px-4 py-2.5 flex items-center justify-center">
+<span class="font-body-md text-body-md text-sm italic">Waiting...</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Action Area -->
+<div class="fixed bottom-[80px] inset-x-0 mx-auto max-w-md px-safe-margin pb-4 bg-gradient-to-t from-surface via-surface to-transparent pt-8 z-30">
+<button class="w-full min-h-[56px] bg-primary-container text-on-primary-container border-2 border-primary rounded-xl font-headline-lg-mobile text-handwritten-accent flex items-center justify-center gap-2 shadow-[0_4px_10px_rgba(0,0,0,0.1)] transition-transform active:scale-95 hover:bg-primary-fixed">
+<span class="material-symbols-outlined fill-icon">playing_cards</span>
+                Deal the Cards
+            </button>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 inset-x-0 mx-auto max-w-md w-full z-50 flex justify-around items-center px-xs pb-6 pt-xs bg-surface-container-low shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-xl">
+<!-- Play (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant/50 transition-colors rounded-xl">
+<span class="material-symbols-outlined mb-1">casino</span>
+<span class="font-label-caps text-label-caps">Play</span>
+</button>
+<!-- Board (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant/50 transition-colors rounded-xl">
+<span class="material-symbols-outlined mb-1">grid_on</span>
+<span class="font-label-caps text-label-caps">Board</span>
+</button>
+<!-- Lobby (Active) -->
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-1 -translate-y-1 transition-transform duration-200 shadow-sm">
+<span class="material-symbols-outlined mb-1 fill-icon">group</span>
+<span class="font-label-caps text-label-caps font-bold">Lobby</span>
+</button>
+</nav>
+</div>
+</body></html>

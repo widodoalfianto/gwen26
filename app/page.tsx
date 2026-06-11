@@ -10,7 +10,11 @@ export default function Home() {
   const [name, setNameState] = useState<string>(() =>
     typeof window !== "undefined" ? getName() : "",
   );
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState<string>(() =>
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("join")?.toUpperCase() || ""
+      : "",
+  );
   const [err, setErr] = useState("");
 
   const go = (c: string) => {
@@ -29,15 +33,9 @@ export default function Home() {
   };
 
   return (
-    <main className="wrap">
-      <header style={{ textAlign: "center", margin: "26px 0 30px" }}>
-        <h1 className="display" style={{ fontSize: 46, margin: 0 }}>
-          <span style={{ color: "var(--green-deep)" }}>Gwen</span>{" "}
-          <span style={{ color: "var(--blue-deep)" }}>26</span>
-        </h1>
-        <div className="eyebrow" style={{ marginTop: 12 }}>
-          ☀️ The Bingo Round
-        </div>
+    <main className="wrap home">
+      <header className="hero">
+        <h1 className="display hero-title">Gwen 26</h1>
       </header>
 
       <div className="card">
@@ -73,7 +71,7 @@ export default function Home() {
           />
           <button
             className="btn btn--accent"
-            style={{ width: 120, ["--accent" as string]: "var(--blue)" } as React.CSSProperties}
+            style={{ width: 120, ["--accent" as string]: "var(--honey)" } as React.CSSProperties}
             onClick={join}
           >
             Join
@@ -85,13 +83,13 @@ export default function Home() {
         )}
       </div>
 
-      <div className="card" style={{ marginTop: 16 }}>
+      <div className="card card--top" style={{ marginTop: 16 }}>
         <div className="eyebrow">How a round works</div>
-        <ol className="muted" style={{ fontSize: 14, lineHeight: 1.65, paddingLeft: 18, margin: "8px 0 0" }}>
-          <li>Each team is dealt 5 secret <b style={{ color: "var(--ink)" }}>Things</b> cards.</li>
+        <ol className="howto">
+          <li>Each team is dealt 5 secret <b style={{ color: "var(--ink)" }}>words</b>.</li>
           <li>
-            Before swapping, each team fills its board with words it thinks the <i>other</i> team will
-            blurt out while guessing.
+            Before swapping, each team fills their bingo board with words they think the <i>other</i>  team will
+            say while guessing. Think of <b style={{ color: "var(--ink)" }}>Taboo</b> meets <b style={{ color: "var(--ink)" }}>Bingo.</b>
           </li>
           <li>
             On a team&apos;s turn it has 60s to get teammates to guess the swapped cards —{" "}
