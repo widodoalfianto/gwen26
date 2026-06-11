@@ -95,9 +95,8 @@ function TopBar({ state, code }: { state: GameState; code: string }) {
     <div className="topbar">
       <div>
         <div className="display" style={{ fontSize: 21 }}>
-          <span style={{ color: "var(--green-deep)" }}>Things</span>{" "}
-          <span style={{ color: "var(--dim)", fontStyle: "normal" }}>&amp;</span>{" "}
-          <span style={{ color: "var(--blue-deep)" }}>Sayings</span>
+          <span style={{ color: "var(--green-deep)" }}>Gwen</span>{" "}
+          <span style={{ color: "var(--blue-deep)" }}>26</span>
         </div>
         {state.phase !== "lobby" && state.phase !== "done" && (
           <div className="muted tiny" style={{ marginTop: 2 }}>

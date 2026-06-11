@@ -32,9 +32,8 @@ export default function Home() {
     <main className="wrap">
       <header style={{ textAlign: "center", margin: "26px 0 30px" }}>
         <h1 className="display" style={{ fontSize: 46, margin: 0 }}>
-          <span style={{ color: "var(--green-deep)" }}>Things</span>{" "}
-          <span style={{ color: "var(--dim)", fontStyle: "normal" }}>&amp;</span>{" "}
-          <span style={{ color: "var(--blue-deep)" }}>Sayings</span>
+          <span style={{ color: "var(--green-deep)" }}>Gwen</span>{" "}
+          <span style={{ color: "var(--blue-deep)" }}>26</span>
         </h1>
         <div className="eyebrow" style={{ marginTop: 12 }}>
           ☀️ The Bingo Round
