@@ -1,0 +1,453 @@
+/* ============================================================
+   Things & Sayings — a bright spring/summer day.
+   Lemon yellow accent over pastel green (Meadow) + pastel blue (Sky).
+   ============================================================ */
+
+/* Licensed faces. Drop the .woff2 files in /public/fonts and these
+   activate automatically; until then the stack falls back to Fraunces
+   (display) and Onest (body), loaded in app/layout.tsx. */
+@font-face {
+  font-family: "Superior Title";
+  src: url("/fonts/SuperiorTitle-Italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Mundial";
+  src: url("/fonts/Mundial-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Mundial";
+  src: url("/fonts/Mundial-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --bg-top: #ecf7fd;
+  --bg-bottom: #fcfdf2;
+  --card: #ffffff;
+  --ink: #2c3a2e;
+  --muted: #6f7d6c;
+  --dim: #9aa897;
+  --line: #e7eddc;
+
+  --lemon: #ffe14d;
+  --lemon-deep: #c79400;
+  --lemon-soft: #fff7cc;
+
+  --green: #8ad196;
+  --green-deep: #3f8a55;
+  --green-soft: #e9f6ea;
+
+  --blue: #93cbeb;
+  --blue-deep: #2f7fab;
+  --blue-soft: #e6f3fc;
+
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(44, 58, 46, 0.05), 0 8px 24px rgba(44, 58, 46, 0.06);
+
+  --display: "Superior Title", "Fraunces", Georgia, "Times New Roman", serif;
+  --body: "Mundial", "Onest", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: var(--body);
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 42%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 22px 16px 72px;
+}
+
+.display {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dim);
+}
+.muted {
+  color: var(--muted);
+}
+.tiny {
+  font-size: 12px;
+}
+
+/* cards & surfaces */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.banner {
+  background: var(--lemon-soft);
+  border: 1px solid #f3e08a;
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: #6a5800;
+  font-size: 14px;
+  margin-top: 14px;
+}
+.mc {
+  margin-top: 22px;
+  background: #fbfdf4;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+/* inputs */
+.input {
+  width: 100%;
+  background: #fbfdf6;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px 14px;
+  color: var(--ink);
+  font-size: 16px;
+  font-family: var(--body);
+  outline: none;
+}
+.input:focus-visible {
+  border-color: var(--lemon-deep);
+  box-shadow: 0 0 0 3px var(--lemon-soft);
+}
+.input::placeholder {
+  color: var(--dim);
+}
+.codebox {
+  letter-spacing: 0.45em;
+  text-align: center;
+  text-indent: 0.45em;
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: uppercase;
+}
+
+/* buttons */
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: var(--body);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.08s ease, filter 0.12s ease, opacity 0.12s ease;
+  width: 100%;
+}
+.btn:hover:not(:disabled) {
+  filter: brightness(0.97);
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.btn--primary {
+  background: var(--lemon);
+  color: #4a3a00;
+  box-shadow: 0 6px 16px rgba(255, 210, 63, 0.4);
+}
+.btn--ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+}
+.btn--accent {
+  background: var(--accent, var(--lemon));
+  color: var(--ink);
+}
+
+/* layout helpers */
+.row {
+  display: flex;
+  gap: 10px;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.spacer {
+  height: 18px;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 16px;
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  background: var(--line);
+  flex: 1;
+}
+
+/* top bar + scores */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 10px;
+}
+.scorepill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-weight: 700;
+  background: var(--soft, var(--lemon-soft));
+  border: 1px solid var(--accent, var(--lemon));
+}
+.scoredot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--accent, var(--lemon));
+}
+.codetag {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 10px;
+  padding: 7px 11px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.codetag b {
+  letter-spacing: 0.2em;
+}
+
+/* team chips in lobby */
+.teamcard {
+  border: 1px solid var(--accent, var(--line));
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.teamhead {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 600;
+  color: var(--accent-deep, var(--ink));
+  margin-bottom: 10px;
+}
+.playerchip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: var(--soft, #f4f7ee);
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+/* board */
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.cell--free {
+  background: var(--lemon-soft);
+  border-color: #f0d97a;
+}
+.cell--free .emoji {
+  font-size: 26px;
+  line-height: 1;
+}
+.cell--free .freelabel {
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  color: var(--lemon-deep);
+  margin-top: 3px;
+}
+.cell input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  outline: none;
+}
+.cell--editable {
+  background: #fbfdf6;
+}
+.cell--editable:focus-within {
+  border-color: var(--lemon-deep);
+  box-shadow: 0 0 0 3px var(--lemon-soft);
+}
+.cell--mark {
+  cursor: pointer;
+}
+.cell--on {
+  background: var(--soft, var(--lemon-soft));
+  border-color: var(--accent, var(--lemon-deep));
+}
+.cell--on .word {
+  opacity: 0.5;
+}
+.stamp {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent, var(--lemon-deep));
+  font-size: 30px;
+  font-weight: 800;
+  pointer-events: none;
+  animation: stamp 0.25s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+@keyframes stamp {
+  0% {
+    transform: scale(2) rotate(-16deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(-7deg);
+    opacity: 1;
+  }
+}
+
+/* timer */
+.timer {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 66px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 6px 0;
+}
+
+/* guess cards */
+.thing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--body);
+  transition: transform 0.08s ease;
+}
+.thing:active:not(:disabled) {
+  transform: scale(0.99);
+}
+.thing--on {
+  background: var(--soft, var(--lemon-soft));
+  border-color: var(--accent, var(--lemon-deep));
+}
+.thing--on .label {
+  text-decoration: line-through;
+  text-decoration-color: var(--accent, var(--lemon-deep));
+}
+
+.bingo {
+  margin-top: 14px;
+  text-align: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--soft, var(--lemon-soft));
+  border: 1px solid var(--accent, var(--lemon-deep));
+  color: var(--accent-deep, var(--lemon-deep));
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.04em;
+}
+
+.pulse {
+  animation: pulse 1s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+.btn:focus-visible,
+.thing:focus-visible,
+.cell--mark:focus-visible,
+.codetag:focus-visible {
+  outline: 2px solid var(--lemon-deep);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp,
+  .pulse {
+    animation: none !important;
+  }
+}
