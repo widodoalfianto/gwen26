@@ -41,11 +41,11 @@ export class Lobby extends Server<Env> {
       }
     }
     const hideScores = s.phase !== "done";
-    if (!hideScores && secret === s.secret) return s;
     return {
       ...s,
       scores: hideScores ? { A: 0, B: 0 } : s.scores,
       history: hideScores ? [] : s.history,
+      usedWords: [], // never exposed — it contains the live secret words
       secret,
     };
   }

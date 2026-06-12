@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { type Room } from "@/lib/useRoom";
+import { getName, setName as storeName } from "@/lib/id";
 import { Board } from "./Board";
 import {
   TEAM_LABEL,
@@ -74,6 +75,8 @@ function Instruct({ emoji, children }: { emoji: string; children: React.ReactNod
 export default function Game({ room, code }: { room: Room; code: string }) {
   const { state, pid, connected, send } = room;
   const [now, setNow] = useState(() => Date.now());
+  const [needsName, setNeedsName] = useState(() => typeof window !== "undefined" && !getName().trim());
+  const [nameDraft, setNameDraft] = useState("");
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(t);
@@ -83,6 +86,41 @@ export default function Game({ room, code }: { room: Room; code: string }) {
     return (
       <main className="wrap">
         <div className="banner">{connected ? "Joining the lobby…" : "Connecting…"}</div>
+      </main>
+    );
+  }
+
+  // Joined via a shared link/QR without a name yet → ask for it right here.
+  if (needsName) {
+    const submitName = () => {
+      const n = nameDraft.trim();
+      if (!n) return;
+      storeName(n);
+      send({ type: "setName", name: n });
+      setNeedsName(false);
+    };
+    return (
+      <main className="wrap">
+        <TopBar state={state} />
+        <div className="card" style={{ marginTop: 22, textAlign: "center" }}>
+          <div className="eyebrow">You&apos;re joining lobby {code}</div>
+          <h2 className="display" style={{ fontSize: 28, margin: "8px 0 16px" }}>
+            What&apos;s your name?
+          </h2>
+          <input
+            className="input"
+            value={nameDraft}
+            maxLength={14}
+            placeholder="e.g. Gwen"
+            autoFocus
+            onChange={(e) => setNameDraft(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submitName()}
+          />
+          <div className="spacer" />
+          <button className="btn btn--primary" disabled={!nameDraft.trim()} onClick={submitName}>
+            Join the game →
+          </button>
+        </div>
       </main>
     );
   }
@@ -144,7 +182,7 @@ function Lobby({
 
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
-  const joinUrl = origin ? `${origin}/?join=${code}` : "";
+  const joinUrl = origin ? `${origin}/room/${code}` : "";
 
   return (
     <div>
@@ -192,11 +230,18 @@ function Lobby({
       </div>
 
       {isHost ? (
-        <button className="btn btn--primary" style={{ marginTop: 18 }} disabled={!ready} onClick={() => send({ type: "start" })}>
-          {ready ? "Deal the cards →" : `Need ${MIN_PER_TEAM}+ per team (${total} in)`}
-        </button>
+        <>
+          {total >= 2 && (
+            <button className="btn btn--ghost" style={{ marginTop: 18 }} onClick={() => send({ type: "shuffleTeams" })}>
+              🔀 Shuffle teams
+            </button>
+          )}
+          <button className="btn btn--primary" style={{ marginTop: 10 }} disabled={!ready} onClick={() => send({ type: "start" })}>
+            {ready ? "Deal the cards →" : `Need ${MIN_PER_TEAM}+ per team (${total} in)`}
+          </button>
+        </>
       ) : (
-        <div className="banner">The host starts the game once everyone&apos;s in.</div>
+        <div className="banner">The host shuffles teams and starts the game once everyone&apos;s in.</div>
       )}
     </div>
   );
@@ -562,7 +607,7 @@ function Done({ state, send, isHost }: { state: GameState; send: Room["send"]; i
 
       {isHost && (
         <button className="btn btn--primary" style={{ marginTop: 22 }} onClick={() => send({ type: "reset" })}>
-          Play again →
+          🔀 Play again — new teams →
         </button>
       )}
     </div>
