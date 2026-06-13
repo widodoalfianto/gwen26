@@ -15,6 +15,14 @@ function rand(seed: number): number {
   return x - Math.floor(x);
 }
 
+// Shrink long predictions so they don't clip in a small square.
+function wordSize(w: string): number | undefined {
+  const n = (w || "").length;
+  if (n > 18) return 9;
+  if (n > 13) return 10.5;
+  return undefined; // CSS default (12px)
+}
+
 function FreeCell({ img, emoji, label }: { img: string; emoji: string; label: string }) {
   const [failed, setFailed] = useState(false);
   return (
@@ -87,7 +95,9 @@ export function Board({
               disabled={!clickable}
               onClick={() => onMark?.(i)}
             >
-              <span className="word">{words[i] || ""}</span>
+              <span className="word" style={{ fontSize: wordSize(words[i]) }}>
+                {words[i] || ""}
+              </span>
             </button>
           );
         })}

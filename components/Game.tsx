@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { type Room } from "@/lib/useRoom";
 import { getName, setName as storeName } from "@/lib/id";
+import { buzz, HAPTIC } from "@/lib/haptics";
+import { SOUND, unlockAudio } from "@/lib/sound";
 import { Board } from "./Board";
 import {
   TEAM_LABEL,
@@ -37,6 +39,82 @@ function teamVars(team: Team): React.CSSProperties {
 
 const nameOf = (state: GameState, id: string | null) =>
   state.players.find((p) => p.id === id)?.name ?? "Someone";
+
+const CONFETTI_COLORS = ["#e23b34", "#2f9e44", "#2b76c9", "#eab308", "#f2e989"];
+
+function Confetti() {
+  const bits = useMemo(
+    () =>
+      Array.from({ length: 46 }).map(() => ({
+        left: Math.random() * 100,
+        delay: Math.random() * 0.7,
+        dur: 2.4 + Math.random() * 1.8,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        w: 7 + Math.random() * 7,
+      })),
+    [],
+  );
+  return (
+    <div className="confetti" aria-hidden="true">
+      {bits.map((b, i) => (
+        <span
+          key={i}
+          className="confetti-bit"
+          style={{
+            left: `${b.left}%`,
+            width: b.w,
+            height: b.w * 0.6,
+            background: b.color,
+            animationDelay: `${b.delay}s`,
+            animationDuration: `${b.dur}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function useCountUp(target: number, ms = 900): number {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / ms);
+      setV(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms]);
+  return v;
+}
+
+const RULES: React.ReactNode[] = [
+  <>Each team is dealt 5 secret <b>words</b>.</>,
+  <>One teammate is the <b>guesser</b> — they never see the words.</>,
+  <>The rest describe (Taboo-style); the guesser shouts answers. <b>+1</b> each.</>,
+  <>The other team predicts those clues on their board. Full board = <b>bingo, +3</b>.</>,
+  <>Everyone guesses once per team. Most points at the end wins.</>,
+];
+
+function RulesOverlay({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="overlay-card" onClick={(e) => e.stopPropagation()}>
+        <div className="eyebrow">How a round works</div>
+        <ol className="howto" style={{ marginTop: 12 }}>
+          {RULES.map((r, i) => (
+            <li key={i}>{r}</li>
+          ))}
+        </ol>
+        <button className="btn btn--primary" style={{ marginTop: 16 }} onClick={onClose}>
+          Got it
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function CircleTimer({ remaining, total, active }: { remaining: number; total: number; active: boolean }) {
   const R = 44;
@@ -77,6 +155,7 @@ export default function Game({ room, code }: { room: Room; code: string }) {
   const [now, setNow] = useState(() => Date.now());
   const [needsName, setNeedsName] = useState(() => typeof window !== "undefined" && !getName().trim());
   const [nameDraft, setNameDraft] = useState("");
+  const [showRules, setShowRules] = useState(false);
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(t);
@@ -127,15 +206,18 @@ export default function Game({ room, code }: { room: Room; code: string }) {
 
   const me = state.players.find((p) => p.id === pid) ?? null;
   const isHost = state.hostId === pid;
+  // One phone per team plays sound: the first player on each team's roster.
+  const amAudioLeader = !!me && state.players.find((p) => p.team === me.team)?.id === me.id;
 
   return (
     <main className="wrap">
-      <TopBar state={state} />
+      {showRules && <RulesOverlay onClose={() => setShowRules(false)} />}
+      <TopBar state={state} onHelp={() => setShowRules(true)} />
       {state.phase === "lobby" && <Lobby state={state} send={send} me={me} isHost={isHost} code={code} />}
       {state.phase === "fill" && <Fill state={state} send={send} me={me} />}
       {state.phase === "ready" && <Ready state={state} send={send} me={me} isHost={isHost} />}
-      {state.phase === "guess" && <Play state={state} send={send} me={me} now={now} isHost={isHost} />}
-      {state.phase === "done" && <Done state={state} send={send} isHost={isHost} />}
+      {state.phase === "guess" && <Play state={state} send={send} me={me} now={now} isHost={isHost} audio={amAudioLeader} />}
+      {state.phase === "done" && <Done state={state} send={send} isHost={isHost} audio={amAudioLeader} />}
       {!me && state.phase !== "lobby" && (
         <div className="banner">You&apos;re watching — this game is already underway.</div>
       )}
@@ -145,18 +227,25 @@ export default function Game({ room, code }: { room: Room; code: string }) {
 
 /* ---------------- top bar ---------------- */
 
-function TopBar({ state }: { state: GameState }) {
+function TopBar({ state, onHelp }: { state: GameState; onHelp?: () => void }) {
   const showRound = state.phase !== "lobby" && state.phase !== "done";
   return (
     <div className="topbar">
       <div className="display" style={{ fontSize: 26, color: "#d9ab00" }}>
         Gwen 26
       </div>
-      {showRound && (
-        <span className="eyebrow">
-          Round {roundOf(state.turnNo)}/{state.maxRounds}
-        </span>
-      )}
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {showRound && (
+          <span className="eyebrow">
+            Round {roundOf(state.turnNo)}/{state.maxRounds}
+          </span>
+        )}
+        {onHelp && (
+          <button className="helpbtn" onClick={onHelp} aria-label="How to play">
+            ?
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -184,6 +273,21 @@ function Lobby({
   useEffect(() => setOrigin(window.location.origin), []);
   const joinUrl = origin ? `${origin}/room/${code}` : "";
 
+  const [copied, setCopied] = useState(false);
+  const canShare = typeof navigator !== "undefined" && !!navigator.share;
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(joinUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* ignore */
+    }
+  };
+  const shareLink = () => {
+    navigator.share?.({ title: "Gwen 26", text: "Join my game!", url: joinUrl }).catch(() => {});
+  };
+
   return (
     <div>
       {!me && <div className="banner">Seating you in the lobby…</div>}
@@ -193,10 +297,22 @@ function Lobby({
           {code}
         </div>
         {joinUrl && (
-          <div className="qrbox">
-            <QRCodeSVG value={joinUrl} size={140} bgColor="#ffffff" fgColor="#1b1c18" level="M" marginSize={2} />
-            <div className="eyebrow" style={{ marginTop: 8 }}>📷 Scan to join</div>
-          </div>
+          <>
+            <div className="qrbox">
+              <QRCodeSVG value={joinUrl} size={140} bgColor="#ffffff" fgColor="#1b1c18" level="M" marginSize={2} />
+              <div className="eyebrow" style={{ marginTop: 8 }}>📷 Scan to join</div>
+            </div>
+            <div className="row" style={{ justifyContent: "center", gap: 8, marginTop: 12 }}>
+              <button className="btn btn--ghost" style={{ width: "auto", padding: "10px 16px" }} onClick={copyLink}>
+                {copied ? "Copied ✓" : "🔗 Copy link"}
+              </button>
+              {canShare && (
+                <button className="btn btn--ghost" style={{ width: "auto", padding: "10px 16px" }} onClick={shareLink}>
+                  Share
+                </button>
+              )}
+            </div>
+          </>
         )}
         <div className="muted" style={{ fontSize: 14, marginTop: 14 }}>
           {ready ? "Everyone in? Deal the cards." : `Need ${MIN_PER_TEAM}–${MAX_PER_TEAM} players per team.`}
@@ -236,7 +352,15 @@ function Lobby({
               🔀 Shuffle teams
             </button>
           )}
-          <button className="btn btn--primary" style={{ marginTop: 10 }} disabled={!ready} onClick={() => send({ type: "start" })}>
+          <button
+            className="btn btn--primary"
+            style={{ marginTop: 10 }}
+            disabled={!ready}
+            onClick={() => {
+              unlockAudio();
+              send({ type: "start" });
+            }}
+          >
             {ready ? "Deal the cards →" : `Need ${MIN_PER_TEAM}+ per team (${total} in)`}
           </button>
         </>
@@ -430,7 +554,10 @@ function Ready({
         <button
           className={iAmReady ? "btn btn--ghost" : "btn btn--primary"}
           style={{ marginTop: 6 }}
-          onClick={() => send({ type: "ready" })}
+          onClick={() => {
+            unlockAudio();
+            send({ type: "ready" });
+          }}
         >
           {iAmReady ? "✓ Ready (tap to undo)" : "I'm ready"}
         </button>
@@ -439,7 +566,14 @@ function Ready({
         {readyCount}/{total} ready
       </div>
       {isHost && readyCount < total && (
-        <button className="btn btn--ghost" style={{ marginTop: 10 }} onClick={() => send({ type: "forceStart" })}>
+        <button
+          className="btn btn--ghost"
+          style={{ marginTop: 10 }}
+          onClick={() => {
+            unlockAudio();
+            send({ type: "forceStart" });
+          }}
+        >
           Start the 60s anyway
         </button>
       )}
@@ -455,12 +589,14 @@ function Play({
   me,
   now,
   isHost,
+  audio,
 }: {
   state: GameState;
   send: Room["send"];
   me: Player | null;
   now: number;
   isHost: boolean;
+  audio: boolean;
 }) {
   const G = state.turnTeam!;
   const L = otherTeam(G);
@@ -476,6 +612,22 @@ function Play({
   const timeUp = state.turnActive && remaining <= 0;
   const idx = state.revealIdx;
   const curWord = state.secret[idx] || "";
+
+  useEffect(() => {
+    buzz(HAPTIC.start); // a "go!" nudge when the round begins
+  }, []);
+  useEffect(() => {
+    if (!state.turnActive) return;
+    if (remaining === 10) {
+      buzz(HAPTIC.warn);
+      if (audio) SOUND.warn();
+    } else if (remaining === 0) {
+      buzz(HAPTIC.timeUp);
+      if (audio) SOUND.timeUp();
+    } else if (audio && remaining > 0 && remaining <= 3) {
+      SOUND.tick();
+    }
+  }, [remaining, state.turnActive, audio]);
 
   return (
     <div>
@@ -518,7 +670,10 @@ function Play({
             className="btn btn--accent"
             style={{ ...teamVars(G), marginTop: 14 }}
             disabled={!state.turnActive || idx >= 5}
-            onClick={() => send({ type: "got" })}
+            onClick={() => {
+              buzz(HAPTIC.tap);
+              send({ type: "got" });
+            }}
           >
             Got it! Next word →
           </button>
@@ -545,7 +700,14 @@ function Play({
           <Board
             words={state.board.words}
             marked={state.board.marked}
-            onMark={amHolder && state.turnActive ? (i) => send({ type: "mark", idx: i }) : null}
+            onMark={
+              amHolder && state.turnActive
+                ? (i) => {
+                    buzz(HAPTIC.stamp);
+                    send({ type: "mark", idx: i });
+                  }
+                : null
+            }
             accent={accentOf(L)}
             soft={softOf(L)}
             seed={state.turnNo}
@@ -574,11 +736,40 @@ function Play({
 
 /* ---------------- done / reveal ---------------- */
 
-function Done({ state, send, isHost }: { state: GameState; send: Room["send"]; isHost: boolean }) {
+function Scorecard({ team, score, winner }: { team: Team; score: number; winner: boolean }) {
+  const shown = useCountUp(score);
+  return (
+    <div className={`scorecard${winner ? " scorecard--win" : ""}`} style={teamVars(team)}>
+      {winner && <div className="scorecard-crown">👑</div>}
+      <div className="display scorecard-name">{TEAM_LABEL[team]}</div>
+      <div className="scorecard-num">{shown}</div>
+      <div className="eyebrow">points</div>
+    </div>
+  );
+}
+
+function Done({
+  state,
+  send,
+  isHost,
+  audio,
+}: {
+  state: GameState;
+  send: Room["send"];
+  isHost: boolean;
+  audio: boolean;
+}) {
   const { A, B } = state.scores;
   const winner: Team | null = A === B ? null : A > B ? "A" : "B";
+  useEffect(() => {
+    if (winner) {
+      buzz(HAPTIC.win);
+      if (audio) SOUND.win();
+    }
+  }, [winner, audio]);
   return (
     <div style={{ paddingTop: 12 }}>
+      {winner && <Confetti />}
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: 60 }}>{winner ? "🏆" : "🤝"}</div>
         <div className="display" style={{ fontSize: 34, color: winner ? accentDeepOf(winner) : "var(--lemon-deep)" }}>
@@ -589,12 +780,7 @@ function Done({ state, send, isHost }: { state: GameState; send: Room["send"]; i
       {/* fun score cards */}
       <div className="grid2" style={{ marginTop: 16 }}>
         {(["A", "B"] as Team[]).map((t) => (
-          <div key={t} className={`scorecard${winner === t ? " scorecard--win" : ""}`} style={teamVars(t)}>
-            {winner === t && <div className="scorecard-crown">👑</div>}
-            <div className="display scorecard-name">{TEAM_LABEL[t]}</div>
-            <div className="scorecard-num">{state.scores[t]}</div>
-            <div className="eyebrow">points</div>
-          </div>
+          <Scorecard key={t} team={t} score={state.scores[t]} winner={winner === t} />
         ))}
       </div>
 

@@ -324,6 +324,28 @@ function concludeTurn(s: GameState): void {
   }
 }
 
+// Keep the active guesser / board-holder pointing at players who are still
+// connected. Called by the server when someone disconnects so a dropped phone
+// can't stall a turn (e.g. the only person who can fill/mark the board leaves).
+export function reassignRoles(prev: GameState, presentIds: string[]): GameState {
+  if (prev.phase === "lobby" || prev.phase === "done" || !prev.turnTeam) return prev;
+  const present = new Set(presentIds);
+  const G = prev.turnTeam;
+  const L = otherTeam(G);
+  let guesserId = prev.guesserId;
+  let boardHolderId = prev.boardHolderId;
+  if (!guesserId || !present.has(guesserId)) {
+    const cand = teamOf(prev, G).find((p) => present.has(p.id));
+    if (cand) guesserId = cand.id;
+  }
+  if (!boardHolderId || !present.has(boardHolderId)) {
+    const cand = teamOf(prev, L).find((p) => present.has(p.id));
+    if (cand) boardHolderId = cand.id;
+  }
+  if (guesserId === prev.guesserId && boardHolderId === prev.boardHolderId) return prev;
+  return { ...prev, guesserId, boardHolderId };
+}
+
 // Called by the server when the turn alarm fires.
 export function onTimeout(prev: GameState): ReduceResult {
   if (prev.phase !== "guess" || !prev.turnActive) return { state: prev };

@@ -1,5 +1,5 @@
 import { routePartykitRequest, Server, type Connection } from "partyserver";
-import { reduce, onTimeout, initialState, type GameState, type ClientMsg } from "../../lib/game";
+import { reduce, onTimeout, reassignRoles, initialState, type GameState, type ClientMsg } from "../../lib/game";
 
 export interface Env {
   Lobby: DurableObjectNamespace;
@@ -102,10 +102,11 @@ export class Lobby extends Server<Env> {
     this.broadcastState();
   }
 
-  // If the host's last connection drops, hand the crown to someone still here.
+  // On disconnect: migrate the host if needed, and make sure the active
+  // guesser / board-holder are still present so a dropped phone can't stall.
   async onClose(connection: Connection<ConnState>) {
     const pid = (connection.state as ConnState | null)?.playerId;
-    if (!pid || this.state.hostId !== pid) return;
+    if (!pid) return;
 
     const present = new Set<string>();
     for (const c of this.getConnections<ConnState>()) {
@@ -113,11 +114,17 @@ export class Lobby extends Server<Env> {
       const cs = c.state as ConnState | null;
       if (cs?.playerId) present.add(cs.playerId);
     }
-    if (present.has(pid)) return; // host still has another tab open
+    if (present.has(pid)) return; // this player still has another tab open
 
-    const heir = this.state.players.find((p) => present.has(p.id));
-    if (heir) {
-      this.state = { ...this.state, hostId: heir.id };
+    let next = this.state;
+    if (next.hostId === pid) {
+      const heir = next.players.find((p) => present.has(p.id));
+      if (heir) next = { ...next, hostId: heir.id };
+    }
+    next = reassignRoles(next, [...present]);
+
+    if (next !== this.state) {
+      this.state = next;
       await this.persist();
       this.broadcastState();
     }
