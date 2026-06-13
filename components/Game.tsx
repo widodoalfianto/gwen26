@@ -92,8 +92,8 @@ function useCountUp(target: number, ms = 900): number {
 
 const RULES: React.ReactNode[] = [
   <>Each team is dealt 5 secret <b>words</b>.</>,
-  <>One teammate is the <b>guesser</b> — they never see the words.</>,
-  <>The rest describe (Taboo-style); the guesser shouts answers. <b>+1</b> each.</>,
+  <>One teammate is the <b>clue-giver</b> — only they see the words.</>,
+  <>They describe (Taboo-style); the rest of the team shouts guesses. <b>+1</b> each.</>,
   <>The other team predicts those clues on their board. Full board = <b>bingo, +3</b>.</>,
   <>Everyone guesses once per team. Most points at the end wins.</>,
 ];
@@ -417,11 +417,11 @@ function Blind({ title, emoji, children }: { title: string; emoji: string; child
 function Fill({ state, send, me }: { state: GameState; send: Room["send"]; me: Player | null }) {
   const G = state.turnTeam!;
   const L = otherTeam(G);
-  const guesserName = nameOf(state, state.guesserId);
+  const clueGiverName = nameOf(state, state.clueGiverId);
   const holderName = nameOf(state, state.boardHolderId);
   const amHolder = me?.id === state.boardHolderId;
   const amOnGuessing = me?.team === G;
-  const amGuesser = me?.id === state.guesserId;
+  const amClueGiver = me?.id === state.clueGiverId;
 
   const [draft, setDraft] = useState<string[]>(() => [...state.board.words]);
   useEffect(() => {
@@ -430,17 +430,17 @@ function Fill({ state, send, me }: { state: GameState; send: Room["send"]; me: P
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.turnNo]);
 
-  // Guessing team — fully blind to the words.
+  // Guessing team — blind to the words (only the clue-giver sees them, once the round starts).
   if (amOnGuessing) {
     return (
       <div>
         <div className="eyebrow" style={{ textAlign: "center", marginTop: 6 }}>
           Round {roundOf(state.turnNo)} · {TEAM_LABEL[G]} guesses
         </div>
-        <Blind title={amGuesser ? "You're the guesser!" : "Get ready to describe"} emoji={amGuesser ? "🙈" : "🤫"}>
-          {amGuesser
-            ? `No peeking, ${me?.name}. Your team describes the secret words — you guess them out loud.`
-            : `Your guesser is ${guesserName}. The words appear one at a time once the clock starts — describe each one to them.`}
+        <Blind title={amClueGiver ? "You're the clue-giver!" : "Get ready to guess"} emoji={amClueGiver ? "🗣️" : "🙈"}>
+          {amClueGiver
+            ? `You'll describe the secret words to your team — they appear one at a time once the clock starts. Don't say the word itself!`
+            : `${clueGiverName} is your clue-giver. Listen to their clues and shout your guesses — you won't see the words.`}
         </Blind>
         <Instruct emoji="⏳">
           Waiting for <b>{TEAM_LABEL[L]}</b> to fill their board…
@@ -485,8 +485,8 @@ function Fill({ state, send, me }: { state: GameState; send: Room["send"]; me: P
         Fill your board
       </h2>
       <p className="muted" style={{ fontSize: 14, marginTop: 0 }}>
-        {TEAM_LABEL[G]} will describe these secret words to <b>{guesserName}</b>. Predict the words
-        they&apos;ll say out loud. A bingo is worth 3 points!
+        <b>{clueGiverName}</b> will give {TEAM_LABEL[G]}&apos;s clues for these secret words. Predict
+        the words <b>{clueGiverName}</b> will say out loud. A bingo is worth 3 points!
       </p>
       <SecretCards words={state.secret} team={G} />
       <Board
@@ -532,7 +532,7 @@ function Ready({
   isHost: boolean;
 }) {
   const G = state.turnTeam!;
-  const guesserName = nameOf(state, state.guesserId);
+  const clueGiverName = nameOf(state, state.clueGiverId);
   const iAmReady = !!me && state.ready.includes(me.id);
   const readyCount = state.ready.length;
   const total = state.players.length;
@@ -546,8 +546,8 @@ function Ready({
         Get ready!
       </h2>
       <p className="muted" style={{ fontSize: 14, marginTop: 0 }}>
-        <b>{guesserName}</b> is guessing for {TEAM_LABEL[G]}. Words reveal one at a time once the 60s
-        starts — tap ready when your whole room is set.
+        <b>{clueGiverName}</b> gives the clues for {TEAM_LABEL[G]}; the rest of the team guesses. Words
+        reveal one at a time once the 60s starts — tap ready when your whole room is set.
       </p>
 
       {me && (
@@ -600,10 +600,10 @@ function Play({
 }) {
   const G = state.turnTeam!;
   const L = otherTeam(G);
-  const guesserName = nameOf(state, state.guesserId);
+  const clueGiverName = nameOf(state, state.clueGiverId);
   const holderName = nameOf(state, state.boardHolderId);
-  const amGuesser = me?.id === state.guesserId;
-  const amDescriber = me?.team === G && !amGuesser;
+  const amClueGiver = me?.id === state.clueGiverId;
+  const amGuesser = me?.team === G && !amClueGiver;
   const amHolder = me?.id === state.boardHolderId;
   const amListening = me?.team === L;
 
@@ -633,7 +633,7 @@ function Play({
     <div>
       <div style={{ textAlign: "center", marginBottom: 12 }}>
         <div className="eyebrow" style={{ color: accentDeepOf(G), marginBottom: 6 }}>
-          {guesserName} is guessing for {TEAM_LABEL[G]}
+          {TEAM_LABEL[G]} is guessing · {clueGiverName} gives clues
         </div>
         <CircleTimer remaining={remaining} total={60} active={state.turnActive && !timeUp} />
         {timeUp && (
@@ -650,7 +650,7 @@ function Play({
             Guess out loud!
           </h2>
           <p className="muted" style={{ fontSize: 14, margin: 0 }}>
-            Listen to your team and shout your guesses.
+            Listen to {clueGiverName}&apos;s clues and shout your guesses.
           </p>
           <div className="display" style={{ fontSize: 40, marginTop: 12, color: "var(--lemon-deep)" }}>
             {idx}/5
@@ -658,10 +658,10 @@ function Play({
         </div>
       )}
 
-      {amDescriber && (
+      {amClueGiver && (
         <div style={teamVars(G)}>
           <div className="eyebrow" style={{ textAlign: "center", color: "var(--accent-deep)" }}>
-            Word {Math.min(idx + 1, 5)} of 5 · get {guesserName} to say it
+            Word {Math.min(idx + 1, 5)} of 5 · get your team to say it
           </div>
           <div className="reveal-card" style={teamVars(G)}>
             <div className="display reveal-word">{curWord || "…"}</div>
@@ -675,10 +675,10 @@ function Play({
               send({ type: "got" });
             }}
           >
-            Got it! Next word →
+            They got it! Next word →
           </button>
           <p className="muted tiny" style={{ textAlign: "center", marginTop: 10 }}>
-            No skipping — they have to get this one first.
+            No skipping — they have to get this one first. Don&apos;t say the word!
           </p>
         </div>
       )}
@@ -804,7 +804,7 @@ function TurnReview({ log, seed }: { log: TurnLog; seed: number }) {
   return (
     <div className="card" style={{ marginTop: 14, padding: 16 }}>
       <div className="eyebrow" style={{ color: accentDeepOf(log.team) }}>
-        Round {log.round} · {TEAM_LABEL[log.team]} guessing · {log.guesserName}
+        Round {log.round} · {TEAM_LABEL[log.team]} guessing · clues by {log.clueGiverName}
       </div>
 
       {/* words: right vs wrong, each +1 */}

@@ -22,23 +22,19 @@ export class Lobby extends Server<Env> {
     await this.ctx.storage.put("state", this.state);
   }
 
-  // Per-connection view. Scores stay hidden until the final reveal. The whole
-  // GUESSING team is blind to the words: nobody on it sees them during fill/
-  // ready, and during the round its describers only get the words revealed so
-  // far (one at a time). The guesser never sees any. The listening team (who
-  // predicts) sees them all.
+  // Per-connection view. Scores stay hidden until the final reveal. Only the
+  // CLUE-GIVER ever sees the words, and only during the round — one at a time.
+  // Everyone else on the guessing team is blind; the listening team (who
+  // predicts) sees them all so they can guess what the clue-giver will say.
   private view(playerId?: string): GameState {
     const s = this.state;
     const me = playerId ? s.players.find((p) => p.id === playerId) : undefined;
     let secret = s.secret;
     if (me && s.turnTeam && me.team === s.turnTeam) {
-      if (me.id === s.guesserId) {
-        secret = [];
-      } else if (s.phase === "guess") {
-        secret = s.secret.map((w, i) => (i <= s.revealIdx ? w : "")); // revealed so far
-      } else {
-        secret = []; // fill / ready — blind
-      }
+      secret =
+        me.id === s.clueGiverId && s.phase === "guess"
+          ? s.secret.map((w, i) => (i <= s.revealIdx ? w : "")) // revealed so far
+          : []; // every other guesser is blind (and the clue-giver before the round)
     }
     const hideScores = s.phase !== "done";
     return {

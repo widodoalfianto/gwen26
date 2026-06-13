@@ -6,8 +6,8 @@ export type Team = "A" | "B";
 // Per-turn flow:
 //   lobby → fill → ready → guess → (next turn) … → done
 // A "round" is one Meadow turn + one Sky turn. The game runs until everyone
-// on both teams has been the guesser at least once (maxRounds = the larger
-// team's size; the smaller team re-uses guessers on its extra rounds).
+// on both teams has been the clue-giver at least once (maxRounds = the larger
+// team's size; the smaller team re-uses clue-givers on its extra rounds).
 export type Phase = "lobby" | "fill" | "ready" | "guess" | "done";
 
 export interface Player {
@@ -24,7 +24,7 @@ export interface Board {
 export interface TurnLog {
   round: number;
   team: Team; // the guessing team
-  guesserName: string;
+  clueGiverName: string;
   words: string[]; // the 5 secret words
   gotCount: number; // words[0..gotCount-1] were guessed (right); the rest weren't
   boardTeam: Team; // the listening team that owned the board
@@ -41,13 +41,13 @@ export interface GameState {
   maxRounds: number; // max(|A|, |B|)
   turnNo: number; // 0-based global turn counter; G = turnNo even ? A : B
   shuffled: string[]; // word pool for the whole game (5 per turn)
-  guessedIds: { A: string[]; B: string[] }; // who has guessed (random w/o replacement)
+  guessedIds: { A: string[]; B: string[] }; // who has been clue-giver (random w/o replacement)
 
   // current turn
   turnTeam: Team | null; // the GUESSING team this turn (G); listener L = other(G)
-  guesserId: string | null; // the picked guesser on G (never sees the words)
+  clueGiverId: string | null; // the ONE person on G who sees the words and gives clues
   boardHolderId: string | null; // the ONE listener (on L) who fills + marks the board
-  secret: string[]; // 5 secret words; the whole guessing team is blind to these
+  secret: string[]; // 5 secret words; only the clue-giver ever sees them (one at a time)
   board: Board; // the listening team's board for this turn
   revealIdx: number; // during guess, words are revealed one-by-one; also = # gotten
   ready: string[]; // player ids who tapped Ready (ready phase)
@@ -68,7 +68,7 @@ export type ClientMsg =
   | { type: "start" }
   | { type: "saveBoard"; words: string[]; lock: boolean } // board-holder only
   | { type: "ready" }
-  | { type: "got" } // a describer: the guesser got the current word → reveal next
+  | { type: "got" } // clue-giver: the team guessed the current word → reveal next
   | { type: "mark"; idx: number } // board-holder only
   | { type: "forceStart" } // host: skip the ready gate
   | { type: "endTurn" } // host: end the 60s early
@@ -206,7 +206,7 @@ export function initialState(code: string): GameState {
     shuffled: [],
     guessedIds: { A: [], B: [] },
     turnTeam: null,
-    guesserId: null,
+    clueGiverId: null,
     boardHolderId: null,
     secret: [],
     board: emptyBoard(),
@@ -257,8 +257,8 @@ export function boardDupes(words: string[]): Set<number> {
 
 /* ---------------- turn orchestration ---------------- */
 
-// Random guesser, without replacement until everyone on the team has gone.
-function pickGuesser(s: GameState, team: Team): string | null {
+// Random clue-giver, without replacement until everyone on the team has gone.
+function pickClueGiver(s: GameState, team: Team): string | null {
   const members = teamOf(s, team).map((p) => p.id);
   if (members.length === 0) return null;
   let pool = members.filter((id) => !s.guessedIds[team].includes(id));
@@ -283,7 +283,7 @@ function setupTurn(s: GameState): void {
   const G: Team = s.turnNo % 2 === 0 ? "A" : "B";
   const L = otherTeam(G);
   s.turnTeam = G;
-  s.guesserId = pickGuesser(s, G);
+  s.clueGiverId = pickClueGiver(s, G);
   s.boardHolderId = pickRandom(s, L);
   s.secret = s.shuffled.slice(s.turnNo * SECRETS_PER_TURN, s.turnNo * SECRETS_PER_TURN + SECRETS_PER_TURN);
   s.board = emptyBoard();
@@ -306,7 +306,7 @@ function concludeTurn(s: GameState): void {
     s.history.push({
       round: roundOf(s.turnNo),
       team: G,
-      guesserName: s.players.find((p) => p.id === s.guesserId)?.name ?? "Someone",
+      clueGiverName: s.players.find((p) => p.id === s.clueGiverId)?.name ?? "Someone",
       words: [...s.secret],
       gotCount: s.revealIdx,
       boardTeam: L,
@@ -332,18 +332,18 @@ export function reassignRoles(prev: GameState, presentIds: string[]): GameState 
   const present = new Set(presentIds);
   const G = prev.turnTeam;
   const L = otherTeam(G);
-  let guesserId = prev.guesserId;
+  let clueGiverId = prev.clueGiverId;
   let boardHolderId = prev.boardHolderId;
-  if (!guesserId || !present.has(guesserId)) {
+  if (!clueGiverId || !present.has(clueGiverId)) {
     const cand = teamOf(prev, G).find((p) => present.has(p.id));
-    if (cand) guesserId = cand.id;
+    if (cand) clueGiverId = cand.id;
   }
   if (!boardHolderId || !present.has(boardHolderId)) {
     const cand = teamOf(prev, L).find((p) => present.has(p.id));
     if (cand) boardHolderId = cand.id;
   }
-  if (guesserId === prev.guesserId && boardHolderId === prev.boardHolderId) return prev;
-  return { ...prev, guesserId, boardHolderId };
+  if (clueGiverId === prev.clueGiverId && boardHolderId === prev.boardHolderId) return prev;
+  return { ...prev, clueGiverId, boardHolderId };
 }
 
 // Called by the server when the turn alarm fires.
@@ -453,11 +453,11 @@ export function reduce(prev: GameState, msg: ClientMsg, sid: string): ReduceResu
       return { state: s, alarm: s.turnEndsAt };
     }
     case "got": {
-      // A describer (non-guesser on the guessing team) confirms the guesser got
-      // the current word; reveal the next one. No skipping — only ever advances.
+      // Only the clue-giver confirms their team guessed the current word and
+      // reveals the next one. No skipping — only ever advances.
       const p = me();
       if (s.phase !== "guess" || !s.turnActive || !s.turnTeam || !p) return { state: prev };
-      if (p.team !== s.turnTeam || p.id === s.guesserId) return { state: prev };
+      if (p.id !== s.clueGiverId) return { state: prev };
       if (s.revealIdx >= SECRETS_PER_TURN) return { state: prev };
       s.revealIdx += 1;
       if (s.revealIdx >= SECRETS_PER_TURN) {
