@@ -58,6 +58,7 @@ export interface GameState {
   scores: { A: number; B: number };
   history: TurnLog[]; // completed turns; revealed only at `done`
   usedWords: string[]; // words spent this session (persists across replays)
+  pendingLeave: Record<string, number>; // playerId → time to prune (lobby grace); not broadcast
 }
 
 export type ClientMsg =
@@ -72,6 +73,7 @@ export type ClientMsg =
   | { type: "mark"; idx: number } // board-holder only
   | { type: "forceStart" } // host: skip the ready gate
   | { type: "endTurn" } // host: end the 60s early
+  | { type: "kick"; playerId: string } // host: remove a player from the lobby
   | { type: "reset" };
 
 export type ServerMsg = { type: "state"; state: GameState };
@@ -79,6 +81,7 @@ export type ServerMsg = { type: "state"; state: GameState };
 /* ---------------- constants ---------------- */
 
 export const TURN_SECONDS = 60;
+export const LEAVE_GRACE_MS = 30000; // lobby disconnects are pruned after this
 export const SECRETS_PER_TURN = 5;
 export const MIN_PER_TEAM = 2;
 export const MAX_PER_TEAM = 5;
@@ -217,6 +220,7 @@ export function initialState(code: string): GameState {
     scores: { A: 0, B: 0 },
     history: [],
     usedWords: [],
+    pendingLeave: {},
   };
 }
 
@@ -379,6 +383,7 @@ export function reduce(prev: GameState, msg: ClientMsg, sid: string): ReduceResu
       } else if (msg.name && p.name !== msg.name) {
         p.name = msg.name;
       }
+      delete s.pendingLeave[msg.id]; // they're back — cancel any pending removal
       if (!s.hostId) s.hostId = msg.id;
       return { state: s };
     }
@@ -401,6 +406,12 @@ export function reduce(prev: GameState, msg: ClientMsg, sid: string): ReduceResu
       s.players = shuffle(s.players).map((p, i) => ({ ...p, team: i % 2 === 0 ? "A" : "B" }));
       return { state: s };
     }
+    case "kick": {
+      if (!isHost() || s.phase !== "lobby" || msg.playerId === s.hostId) return { state: prev };
+      s.players = s.players.filter((p) => p.id !== msg.playerId);
+      delete s.pendingLeave[msg.playerId];
+      return { state: s };
+    }
     case "start": {
       if (!isHost() || s.phase !== "lobby" || !canStart(s)) return { state: prev };
       s.maxRounds = Math.max(teamOf(s, "A").length, teamOf(s, "B").length);
@@ -411,6 +422,7 @@ export function reduce(prev: GameState, msg: ClientMsg, sid: string): ReduceResu
       s.guessedIds = { A: [], B: [] };
       s.scores = { A: 0, B: 0 };
       s.history = [];
+      s.pendingLeave = {};
       s.turnNo = 0;
       setupTurn(s);
       return { state: s, alarm: null };

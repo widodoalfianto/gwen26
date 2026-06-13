@@ -498,6 +498,21 @@ body::before {
   border-radius: 8px;
 }
 
+/* kick button on lobby player chips */
+.kickbtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #e3b3b0;
+  background: #fdeceb;
+  color: #ba1a1a;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 /* help button + rules overlay */
 .helpbtn {
   width: 28px;

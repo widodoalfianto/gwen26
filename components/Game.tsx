@@ -338,7 +338,21 @@ function Lobby({
                   {p.id === state.hostId ? " 👑" : ""}
                   {p.id === me?.id ? " (you)" : ""}
                 </span>
-                {isHost && p.id !== me?.id && <span className="muted tiny">tap → swap</span>}
+                {isHost && p.id !== me?.id && (
+                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span className="muted tiny">tap → swap</span>
+                    <button
+                      className="kickbtn"
+                      title={`Remove ${p.name}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        send({ type: "kick", playerId: p.id });
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
               </div>
             ))}
           </div>
